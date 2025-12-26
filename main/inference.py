@@ -26,6 +26,7 @@ def parse_args():
     parser.add_argument('--start', type=str, default=1)
     parser.add_argument('--end', type=str, default=1)
     parser.add_argument('--multi_person', action='store_true')
+    parser.add_argument('--show_skeleton', action='store_true', help='Draw skeleton on output visualization')
     args = parser.parse_args()
     return args
 
@@ -136,6 +137,14 @@ def main():
                 out = demoer.model(inputs, targets, meta_info, 'test')
 
             mesh = out['smplx_mesh_cam'].detach().cpu().numpy()[0]
+            
+            # Get joint projections for skeleton visualization
+            joint_proj = out['smplx_joint_proj'].detach().cpu().numpy()[0]  # (N, 2) in output hm coords
+            
+            # Convert joint projections from output_hm_shape to original image coords
+            joint_proj_img = joint_proj.copy()
+            joint_proj_img[:, 0] = joint_proj[:, 0] / cfg.model.output_hm_shape[2] * bbox[2] + bbox[0]
+            joint_proj_img[:, 1] = joint_proj[:, 1] / cfg.model.output_hm_shape[1] * bbox[3] + bbox[1]
 
             # render mesh
             focal = [cfg.model.focal[0] / cfg.model.input_body_shape[1] * bbox[2], 
@@ -146,8 +155,9 @@ def main():
             # draw the bbox on img
             vis_img = cv2.rectangle(vis_img, (int(yolo_bbox[bbox_id][0]), int(yolo_bbox[bbox_id][1])), 
                                     (int(yolo_bbox[bbox_id][2]), int(yolo_bbox[bbox_id][3])), (0, 255, 0), 1)
-            # draw mesh
-            vis_img = render_mesh(vis_img, mesh, smpl_x.face, {'focal': focal, 'princpt': princpt}, mesh_as_vertices=False)
+            # draw mesh (use mesh_as_vertices=True for WSL2/headless environments where pyrender OffscreenRenderer is not supported)
+            vis_img = render_mesh(vis_img, mesh, smpl_x.face, {'focal': focal, 'princpt': princpt}, 
+                                  mesh_as_vertices=True, draw_skeleton_flag=args.show_skeleton, joints_2d=joint_proj_img)
 
         # save rendered image
         frame_name = os.path.basename(img_path)

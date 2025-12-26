@@ -18,7 +18,7 @@ config = {
     "bbox_ratio": 1.2,
     "no_aug": False,
     "data_strategy": "balance",
-    "total_data_len": 7500000,
+    "total_data_len": 300,
   },
 
   "train": {
@@ -30,8 +30,8 @@ config = {
     "num_thread": 1,
     "lr": 1e-5,
     "min_lr": 1e-6,
-    "save_epoch": 1,
-    "remove_checkpoint": False,
+    "save_epoch": 10,
+    "remove_checkpoint": True,
     "print_iters": 100,
     "smplx_kps_3d_weight": 100.0,
     "smplx_kps_2d_weight": 1.0,
@@ -60,7 +60,7 @@ config = {
 
   "model": {
     'model_type': 'vit_huge',
-    "pretrained_model_path": './outputs/train_annot_xtp20_20241108_203832/model_dump/snapshot_7.pth.tar',
+    "pretrained_model_path": './pretrained_models/smplest_x_h/smplest_x_h.pth.tar',
     "human_model_path": './human_models/human_model_files',
     'encoder_pretrained_model_path': './pretrained_models/vitpose_huge.pth',
     'encoder_config': {

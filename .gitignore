@@ -6,3 +6,14 @@ demo
 **/__pycache__
 **/.DS_Store
 **/human_model_files
+
+# 数据和模型文件
+annot/
+img/
+smpl/
+vis_output/
+*.tar.gz
+
+# 日志文件
+inference_log_*.txt
+*.log
