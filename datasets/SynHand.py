@@ -9,8 +9,8 @@ class SynHand(HumanDataset):
 
         self.use_cache = getattr(self.cfg.data, 'use_cache', False)
         self.annot_path_cache = osp.join(self.cfg.data.data_dir, 'cache', f'synhand_{self.data_split}.npz')
-        
-        self.img_shape = None  #(h, w)
+
+        self.img_shape = (1080, 1920)  #(h, w) - SynHand images are 1920x1080
         self.cam_param = {}
         
         # load data or cache
